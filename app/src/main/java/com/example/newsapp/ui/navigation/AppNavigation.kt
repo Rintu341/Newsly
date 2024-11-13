@@ -8,6 +8,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.newsapp.presentation.Everything.EverythingViewModel
 import com.example.newsapp.ui.screen.AppSplashScreen
 import com.example.newsapp.ui.screen.HomeScreen
+import com.example.newsapp.ui.screen.LoginScreen
 import com.example.newsapp.ui.screen.OpeningScreen
 
 
@@ -26,6 +27,9 @@ fun AppNavigation()
             }
             composable(route = AppScreen.OpeningScreen.name){
                 OpeningScreen(navController = navController)
+            }
+            composable(route = AppScreen.LoginScreen.name){
+                LoginScreen(navController = navController)
             }
 
 

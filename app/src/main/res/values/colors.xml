@@ -10,4 +10,5 @@
     <color name="illustration_bc">#F1F3F4</color>
     <color name="BottonBordercolor">#747474</color>
     <color name="splashScreenColor">#63B5AF</color>
+    <color name="backButtonBack">#D8DADC</color>
 </resources>

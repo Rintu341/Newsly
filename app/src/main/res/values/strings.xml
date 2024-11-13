@@ -4,5 +4,9 @@
     <string name="normal_text">Now your news are in the one place and always under control</string>
     <string name="Signin">Sign in</string>
     <string name="Createaccount">Create account</string>
+    <string name="greet">Hi, Welcome! 👋</string>
+    <string name="email_label">Email address</string>
+    <string name="password_label">Password</string>
+    <string name="login">Log in</string>
 
 </resources>

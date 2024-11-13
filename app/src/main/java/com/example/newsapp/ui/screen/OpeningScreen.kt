@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.newsapp.R
+import com.example.newsapp.ui.navigation.AppScreen
 import com.example.newsapp.ui.theme.NewsAppTheme
 
 @Composable
@@ -78,9 +79,14 @@ fun OpeningScreen(navController: NavHostController) {
 
 
             Spacer(modifier = Modifier.heightIn(min = 50.dp))
-            CustomButtonBlack(str = stringResource(id = R.string.Signin))
+            CustomButtonBlack(str = stringResource(id = R.string.Signin), onClick = {
+                navController.navigate(AppScreen.LoginScreen.name)
+            })
             Spacer(modifier = Modifier.height(10.dp))
-            CustomButtonWhite(str = stringResource(id = R.string.Createaccount))
+            CustomButtonWhite(str = stringResource(id = R.string.Createaccount),
+                onClick = {
+
+                })
 
         }
     }
@@ -123,7 +129,8 @@ fun BoldText(modifier: Modifier = Modifier, value:String = stringResource(id = R
 
 @Preview(showBackground = true)
 @Composable
-fun CustomButtonBlack(modifier: Modifier = Modifier,str:String = "Sign In") {
+fun CustomButtonBlack(modifier: Modifier = Modifier,str:String = "Sign In",
+                      onClick:()->Unit = {}) {
     Box(
         modifier
             .fillMaxWidth(),
@@ -135,7 +142,9 @@ fun CustomButtonBlack(modifier: Modifier = Modifier,str:String = "Sign In") {
                 .fillMaxWidth()
                 .heightIn(min = 56.dp)
                 .widthIn(min = 353.dp),
-            onClick = { /*TODO*/ },
+            onClick = {
+                onClick.invoke()
+            },
             colors = ButtonDefaults.buttonColors(Color.Black),
             shape = RoundedCornerShape(10.dp)
             ) {
@@ -149,7 +158,8 @@ fun CustomButtonBlack(modifier: Modifier = Modifier,str:String = "Sign In") {
 }
 @Preview(showBackground = true)
 @Composable
-fun CustomButtonWhite(modifier: Modifier = Modifier, str: String = "Create account") {
+fun CustomButtonWhite(modifier: Modifier = Modifier, str: String = "Create account",
+                      onClick:() -> Unit = {}) {
     Box(
         modifier
             .fillMaxWidth(),
@@ -160,7 +170,9 @@ fun CustomButtonWhite(modifier: Modifier = Modifier, str: String = "Create accou
                 .fillMaxWidth()
                 .heightIn(min = 56.dp)
                 .widthIn(min = 353.dp),
-            onClick = { /*TODO*/ },
+            onClick = {
+                onClick.invoke()
+            },
             colors = ButtonDefaults.outlinedButtonColors(Color.White),
             shape = RoundedCornerShape(10.dp),
             border = BorderStroke(width = 1.dp, color = colorResource(id = R.color.BottonBordercolor))
