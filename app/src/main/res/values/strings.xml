@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">NewsApp</string>
+    <string name="BOLD_String">Explore the app</string>
+    <string name="normal_text">Now your news are in the one place and always under control</string>
+    <string name="Signin">Sign in</string>
+    <string name="Createaccount">Create account</string>
+
 </resources>
