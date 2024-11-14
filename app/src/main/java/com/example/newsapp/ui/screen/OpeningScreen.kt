@@ -18,6 +18,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -85,7 +86,7 @@ fun OpeningScreen(navController: NavHostController) {
             Spacer(modifier = Modifier.height(10.dp))
             CustomButtonWhite(str = stringResource(id = R.string.Createaccount),
                 onClick = {
-
+                    navController.navigate(AppScreen.SignupScreen.name)
                 })
 
         }
@@ -149,6 +150,7 @@ fun CustomButtonBlack(modifier: Modifier = Modifier,str:String = "Sign In",
             shape = RoundedCornerShape(10.dp)
             ) {
                 Text(text = str,
+                    textAlign = TextAlign.Center,
                     color = Color.White,
                     style = TextStyle(
                         fontSize = 16.sp

@@ -10,6 +10,7 @@ import com.example.newsapp.ui.screen.AppSplashScreen
 import com.example.newsapp.ui.screen.HomeScreen
 import com.example.newsapp.ui.screen.LoginScreen
 import com.example.newsapp.ui.screen.OpeningScreen
+import com.example.newsapp.ui.screen.SignupScreen
 
 
 @Composable
@@ -30,6 +31,9 @@ fun AppNavigation()
             }
             composable(route = AppScreen.LoginScreen.name){
                 LoginScreen(navController = navController)
+            }
+            composable(route = AppScreen.SignupScreen.name){
+                SignupScreen(navController = navController)
             }
 
 

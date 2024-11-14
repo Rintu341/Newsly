@@ -54,9 +54,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.newsapp.R
 import com.example.newsapp.ui.navigation.AppScreen
+import com.example.newsapp.ui.screen.components.getPasswordError
+import com.example.newsapp.ui.screen.components.isEmailValid
 
 @Composable
 fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",navController: NavController) {
+
+
+    var email by remember {
+        mutableStateOf("")
+    }
+    var password by remember {
+        mutableStateOf("")
+    }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
 
     Surface(
         modifier = Modifier
@@ -65,21 +77,34 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
             .padding(17.dp)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(color = Color.White),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.heightIn(min = 30.dp))
             CustomTopAppBar(onClick = {
-                navController.popBackStack()
-                navController.navigate(AppScreen.OpeningScreen.name)
+                navController.navigate(AppScreen.OpeningScreen.name) {
+                    popUpTo(AppScreen.OpeningScreen.name) {
+                        inclusive = true
+                    }
+                }
             })
             Spacer(modifier = Modifier.heightIn(min = 60.dp))
             GreetText(value = R.string.greet)
             Spacer(modifier = Modifier.heightIn(min = 30.dp))
-            CustomOutlinedTextField(label = stringResource(id = R.string.email_label), isEmail = true)
+            CustomOutlinedTextField(label = stringResource(id = R.string.email_label), isEmail = true,
+                onNextClicked ={
+                    email = it.trim()
+                    emailError = if (isEmailValid(email)) null else "Invalid email format"
+                } )
+            emailError?.let { Text(text = it, color = Color.Red.copy(alpha = 0.5f)) }
             Spacer(modifier = Modifier.heightIn(min = 20.dp))
-            CustomOutlinedTextField(label = stringResource(id = R.string.password_label),isEmail = false)
+            CustomOutlinedTextField(label = stringResource(id = R.string.password_label),isEmail = false,
+                onNextClicked = {
+                    password = it.trim()
+                    passwordError = getPasswordError(password)
+                })
             Spacer(modifier = Modifier.heightIn(min = 10.dp))
             Row (
                 modifier = Modifier.fillMaxWidth(),
@@ -93,8 +118,17 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
                         // Forgot password to solve
                     })
             }
+            passwordError?.let { Text(text = it, color = Color.Red.copy(alpha = 0.5f)) }
             Spacer(modifier = Modifier.heightIn(min = 50.dp))
-            CustomButtonBlack(str = stringResource(id = R.string.login))
+            CustomButtonBlack(str = stringResource(id = R.string.login),
+                onClick = {
+                    //Perform action (User login)
+                    if (isEmailValid(email) && passwordError == null)
+                    {
+
+                    }
+                }
+            )
             Spacer(modifier = Modifier.heightIn(min = 10.dp))
 //            Row(
 //                modifier = Modifier.fillMaxWidth(),
@@ -114,12 +148,16 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
 //            }
 
             Box(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
                     .padding(bottom = 30.dp),
                 contentAlignment = Alignment.BottomCenter
             ) {
-                SignUpText(){
+                SignUpText(
+                    clickableText = stringResource(id = R.string.signup)
+                ){
                         // navigate to Sign Up Screen
+                    navController.navigate(AppScreen.SignupScreen.name)
                 }
             }
 
@@ -148,14 +186,19 @@ fun GreetText(modifier: Modifier = Modifier, value: Int) {
 }
 @Preview(showBackground = true)
 @Composable
-fun SignUpText(onSignUpClick: () -> Unit = {}) {
+fun SignUpText(
+    initialText: String = "Don’t have an account? ",
+    clickableText: String = "Sign up",
+    onSignUpClick: () -> Unit = {}
+) {
     val annotatedText = buildAnnotatedString {
-        append("Don’t have an account? ")
+        // Add the initial non-clickable text
+        append(initialText)
 
-        // Add "Sign up" text with an annotation to make it clickable
+        // Add the clickable text with an annotation
         pushStringAnnotation(tag = "SignUp", annotation = "SignUp")
         withStyle(style = SpanStyle(color = Color.Black, fontWeight = FontWeight.ExtraBold)) {
-            append("Sign up")
+            append(clickableText)
         }
         pop()
     }
@@ -175,6 +218,8 @@ fun SignUpText(onSignUpClick: () -> Unit = {}) {
         modifier = Modifier.padding(8.dp)
     )
 }
+
+
 
 @Preview(showBackground = true)
 @Composable
@@ -214,7 +259,7 @@ fun CustomOutlinedTextField(
     modifier: Modifier = Modifier,
     label :String = "Password",
     isEmail:Boolean = true,
-    onNext:(String) -> Unit = {}
+    onNextClicked:(String) -> Unit = {}
 ) {
 
     val focusManager = LocalFocusManager.current
@@ -237,6 +282,7 @@ fun CustomOutlinedTextField(
             value = value ,
             onValueChange ={
                 value = it
+                onNextClicked(value)
             },
             label = { Text(if(isEmail)"Your Email" else "Password", color = Color.DarkGray)},
             shape = RoundedCornerShape(10.dp),
@@ -248,11 +294,13 @@ fun CustomOutlinedTextField(
             keyboardActions = KeyboardActions(
                 onNext = {
                     focusManager.clearFocus()
-                    onNext(value)
+                        onNextClicked(value)
+
                 },
                 onDone = {
                     focusManager.clearFocus()
-                    onNext(value)
+                        onNextClicked(value)
+
                 }
             ),
             visualTransformation = if(!isEmail)if(passwordVisible ) VisualTransformation.None else PasswordVisualTransformation() else { VisualTransformation.None},
