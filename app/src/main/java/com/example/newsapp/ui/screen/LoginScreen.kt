@@ -61,11 +61,12 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
     Surface(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = Color.White)
             .padding(17.dp)
-//            .background(color = Color.White)
     ) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
+                .background(color = Color.White),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.heightIn(min = 30.dp))
@@ -85,29 +86,32 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
                 horizontalArrangement = Arrangement.End
             ){
                 Text(text = "Forgot password?",
+                    style = TextStyle(
+                        color = Color.Black
+                    ),
                     modifier = Modifier.clickable {
                         // Forgot password to solve
                     })
             }
             Spacer(modifier = Modifier.heightIn(min = 50.dp))
             CustomButtonBlack(str = stringResource(id = R.string.login))
-            Spacer(modifier = Modifier.heightIn(min = 20.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(modifier = Modifier
-                    .padding(end = 10.dp)
-                    .size(width = 100.dp, height = 1.dp)
-                    .background(color = Color.Gray)
-                    )
-                Text("Or Login with")
-                Spacer(modifier = Modifier
-                    .padding(start = 10.dp)
-                    .size(width = 100.dp, height = 1.dp)
-                    .background(color = Color.Gray)
-                )
-            }
+            Spacer(modifier = Modifier.heightIn(min = 10.dp))
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Spacer(modifier = Modifier
+//                    .padding(end = 10.dp)
+//                    .size(width = 100.dp, height = 1.dp)
+//                    .background(color = Color.Gray)
+//                    )
+//                Text("Or Login with", color = Color.Black)
+//                Spacer(modifier = Modifier
+//                    .padding(start = 10.dp)
+//                    .size(width = 100.dp, height = 1.dp)
+//                    .background(color = Color.Gray)
+//                )
+//            }
 
             Box(
                 modifier = Modifier.fillMaxSize()
@@ -136,7 +140,8 @@ fun GreetText(modifier: Modifier = Modifier, value: Int) {
             text = stringResource(value),
             style = TextStyle(
                 fontSize = 30.sp,
-                fontWeight = FontWeight.ExtraBold
+                fontWeight = FontWeight.ExtraBold,
+                color = Color.Black
             )
         )
     }
@@ -224,7 +229,8 @@ fun CustomOutlinedTextField(
     ) {
         Text(label,
             style = TextStyle(
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = Color.Black
             ))
         OutlinedTextField(
             modifier = Modifier.fillMaxWidth(),
