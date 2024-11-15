@@ -1,6 +1,7 @@
 package com.example.newsapp.ui.screen
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +17,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -30,6 +34,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.newsapp.R
+import com.example.newsapp.data.model.AuthStatus
+import com.example.newsapp.presentation.Authentication.AuthViewModel
 import com.example.newsapp.ui.navigation.AppScreen
 import com.example.newsapp.ui.screen.components.getPasswordError
 import com.example.newsapp.ui.screen.components.isEmailValid
@@ -37,7 +43,11 @@ import com.example.newsapp.ui.screen.components.isEmailValid
 
 //@Preview(showBackground = true)
 @Composable
-fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController) {
+fun SignupScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    authViewModel: AuthViewModel
+) {
     var email by remember {
         mutableStateOf("")
     }
@@ -49,6 +59,21 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
     }
     var emailError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
+
+
+    val authStatus = authViewModel.authStatus.observeAsState()
+    val context = LocalContext.current
+
+    LaunchedEffect(authStatus.value) {
+        when(authStatus.value)
+        {
+            is AuthStatus.Authenticated -> {
+                navController.navigate(AppScreen.HomeScreen.name+"/${username}")
+            }
+            is AuthStatus.Error -> Toast.makeText(context, (authStatus.value as AuthStatus.Error).message, Toast.LENGTH_SHORT).show()
+            else ->Unit
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -101,8 +126,11 @@ fun SignupScreen(modifier: Modifier = Modifier, navController: NavHostController
             CustomButtonBlack(str = stringResource(id = R.string.signup),
                 onClick = {
                     // User sign up logic
-                    if (isEmailValid(email) && passwordError == null && username.isNotBlank())
+                    if (isEmailValid(email) && passwordError == null && username.isNotBlank()) {
                         Log.d("Signup", "SignupScreen: ${username},${email}, $password")
+                        authViewModel.signUp(email, password)
+                    }
+
                 }
             )
             Spacer(modifier = Modifier.heightIn(min = 10.dp))

@@ -1,5 +1,6 @@
 package com.example.newsapp.ui.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,30 +14,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -53,12 +51,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.newsapp.R
+import com.example.newsapp.data.model.AuthStatus
+import com.example.newsapp.presentation.Authentication.AuthViewModel
 import com.example.newsapp.ui.navigation.AppScreen
-import com.example.newsapp.ui.screen.components.getPasswordError
 import com.example.newsapp.ui.screen.components.isEmailValid
 
 @Composable
-fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",navController: NavController) {
+fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",navController: NavController, authViewModel: AuthViewModel) {
 
 
     var email by remember {
@@ -68,7 +67,21 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
         mutableStateOf("")
     }
     var emailError by remember { mutableStateOf<String?>(null) }
-    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    val authStatus = authViewModel.authStatus.observeAsState()
+    val context = LocalContext.current
+//    val currentUser = FirebaseAuth.getInstance().currentUser
+
+    LaunchedEffect(authStatus.value) {
+            when(authStatus.value)
+        {
+            is AuthStatus.Authenticated ->{
+                navController.navigate(AppScreen.HomeScreen.name+"/{username}")
+            }
+            is AuthStatus.Error -> Toast.makeText(context, (authStatus.value as AuthStatus.Error).message, Toast.LENGTH_SHORT).show()
+            else ->Unit
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -103,7 +116,6 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
             CustomOutlinedTextField(label = stringResource(id = R.string.password_label),isEmail = false,
                 onNextClicked = {
                     password = it.trim()
-                    passwordError = getPasswordError(password)
                 })
             Spacer(modifier = Modifier.heightIn(min = 10.dp))
             Row (
@@ -118,14 +130,13 @@ fun LoginScreen(modifier: Modifier = Modifier, greet:String = "Hi Welcome!👋",
                         // Forgot password to solve
                     })
             }
-            passwordError?.let { Text(text = it, color = Color.Red.copy(alpha = 0.5f)) }
             Spacer(modifier = Modifier.heightIn(min = 50.dp))
             CustomButtonBlack(str = stringResource(id = R.string.login),
                 onClick = {
                     //Perform action (User login)
-                    if (isEmailValid(email) && passwordError == null)
+                    if (isEmailValid(email) && password.isNotBlank())
                     {
-
+                        authViewModel.signIn(email, password)
                     }
                 }
             )
