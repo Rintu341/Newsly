@@ -26,7 +26,7 @@ Follow these steps to set up the app locally:
 
 1. **Clone the Repository**  
    ```bash
-   git clone https://github.com/your-username/Newsly.git
+   git clone https://github.com/Rintu341/Newsly.git
    cd Newsly
    ```
 
