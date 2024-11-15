@@ -41,10 +41,10 @@ Follow these steps to set up the app locally:
 4. **Run the App**  
    - Build and run the app on an emulator or physical device.
 
----
+<!-- ---
 
 ## Screenshots 📸
-*Add your app screenshots here to showcase the UI and features.*  
+*Add your app screenshots here to showcase the UI and features.*   -->
 
 ---
 
