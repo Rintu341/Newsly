@@ -11,7 +11,7 @@ interface Everything {
     @GET("everything")
     suspend fun getNews(
         @Query("q") query: String,
-        @Query("apiKey") apiKey: String
+        @Query("apiKey") apiKey: String,
+        @Query("from") from: String
     ) : NewsResponse
-
 }

@@ -8,7 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.newsapp"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.example.newsapp"
@@ -99,4 +99,18 @@ dependencies {
 
     //navigation
     implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation ("androidx.compose.material:material:1.7.5")
+    // CALENDAR
+    implementation ("com.maxkeppeler.sheets-compose-dialogs:core:1.0.2")
+    implementation( "com.maxkeppeler.sheets-compose-dialogs:calendar:1.0.2")
+
+    //Pager
+    implementation ("com.google.accompanist:accompanist-pager:0.31.1-alpha")
+    implementation ("com.google.accompanist:accompanist-pager-indicators:0.31.1-alpha")
+
+    //coil
+    implementation ("io.coil-kt:coil-compose:2.4.0") // For Coil image loading
+    implementation("com.google.accompanist:accompanist-placeholder-material:0.32.0") // For shimmer effect
+
+
 }

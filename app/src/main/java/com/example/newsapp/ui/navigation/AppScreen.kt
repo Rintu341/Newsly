@@ -5,5 +5,7 @@ enum class AppScreen {
     SplashScreen,
     LoginScreen,
     SignupScreen,
-    OpeningScreen
+    OpeningScreen,
+    FavoriteScreen,
+    ProfileScreen
 }

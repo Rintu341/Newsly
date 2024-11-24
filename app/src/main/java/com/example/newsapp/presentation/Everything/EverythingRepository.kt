@@ -8,7 +8,7 @@ class EverythingRepository @Inject constructor(
     private val everything: Everything
 )
 {
-    suspend fun getNews(query:String,apikey:String): NewsResponse {
-       return everything.getNews(query,apikey)
+    suspend fun getNews(query:String,apikey:String,from:String): NewsResponse {
+       return everything.getNews(query,apikey, from )
     }
 }

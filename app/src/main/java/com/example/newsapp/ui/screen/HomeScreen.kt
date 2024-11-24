@@ -1,17 +1,26 @@
 package com.example.newsapp.ui.screen
 
+import android.os.Build
 import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.annotation.RequiresApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,22 +29,103 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.newsapp.R
+import com.example.newsapp.data.model.Specific
 import com.example.newsapp.presentation.Authentication.AuthViewModel
 import com.example.newsapp.presentation.Everything.EverythingViewModel
-import com.example.newsapp.ui.SearchSection
+import com.example.newsapp.presentation.Specific.SpecificViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.maxkeppeker.sheets.core.models.base.rememberSheetState
+import com.maxkeppeler.sheets.calendar.CalendarDialog
+import com.maxkeppeler.sheets.calendar.models.CalendarConfig
+import com.maxkeppeler.sheets.calendar.models.CalendarSelection
+import com.maxkeppeler.sheets.calendar.models.CalendarStyle
+import com.maxkeppeler.sheets.calendar.models.CalendarTimeline
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(modifier: Modifier = Modifier, everythingViewModel: EverythingViewModel,authViewModel: AuthViewModel,username:String) {
+fun HomeScreen(
+    modifier: Modifier = Modifier,
+    everythingViewModel: EverythingViewModel,
+    authViewModel: AuthViewModel,
+    username: String,
+    specificViewModel: SpecificViewModel,
+    navController: NavHostController
+) {
 
-    var isSearchState by remember{
-        mutableStateOf(false)
-    }
-    val status = everythingViewModel.news.observeAsState()
+//    var isSearchState by remember{
+//        mutableStateOf(false)
+//    }
+//    val statusEverything by everythingViewModel.news.observeAsState()
+//    val statusSpecific by specificViewModel.news.observeAsState()
+
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val currentUser = FirebaseAuth.getInstance().currentUser
     var displayName = currentUser?.displayName
+//    var searchValue by remember {
+//        mutableStateOf("")
+//    }
+    var selectDate by remember {
+        mutableStateOf("")
+    }
+    val isFocused by remember {
+        mutableStateOf(false)
+    }
+//    val focusManager = LocalFocusManager.current
+//    val searchWidth = animateFloatAsState(
+//        targetValue = if(isFocused) 1f else 0.9f,
+//        label = "",
+//        animationSpec = tween(durationMillis = 200)
+//    )
+//    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route ?: ""
+
+    //CALENDAR
+    val calendarState = rememberSheetState()
+
+    val navItemList = listOf(
+        NavItem(
+            label = "Home",
+            icon = R.drawable.homeunfocused
+        ),
+        NavItem(
+            label = "Favorite",
+            icon = R.drawable.favoriteunfocused
+        ),
+        NavItem(
+            label = "Profile",
+            icon = R.drawable.profileunfocused
+        )
+    )
+    var selectedIndex by remember {
+        mutableStateOf(0)
+    }
+
+    CalendarDialog(
+        state = calendarState,
+        selection = CalendarSelection.Date{ date ->
+            Log.d("SelectDate", "HomeScreen: $date ")
+            selectDate = date.toString()
+            everythingViewModel.getNews(query = Specific.Latest.name,from = selectDate)
+            specificViewModel.getNews(query = Specific.All.name,from = selectDate)
+        },
+        config = CalendarConfig(
+            style = CalendarStyle.MONTH,
+            disabledTimeline = CalendarTimeline.FUTURE,
+        )
+    )
+
 
     LaunchedEffect(key1 = true) {
         if (username != "username") {
@@ -46,39 +136,83 @@ fun HomeScreen(modifier: Modifier = Modifier, everythingViewModel: EverythingVie
         }
         Log.d("Home", "HomeScreen: $userId" )
     }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    if(!isSearchState){
-                        Text(text = "News App")
-                    }else{
-                        SearchSection(
-                            onArrowClick = {
-                            isSearchState = false
-                            },
-                            onSearchClick = { str->
-                                everythingViewModel.getNews(str)
-
-                            })
-                    }}
-                )
+                Text(text = stringResource(id = R.string.Newsly),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontStyle = FontStyle.Italic,
+                    fontFamily = FontFamily.SansSerif)
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    titleContentColor = MaterialTheme.colorScheme.primary)
+            )
+        },
+        bottomBar = {
+            NavigationBar{
+                navItemList.forEachIndexed{ index, item ->
+                    NavigationBarItem(
+                        selected = selectedIndex == index,
+                        onClick = {
+                            selectedIndex = index
+                        },
+                        icon = {
+                            Icon(
+                                modifier = Modifier.size(20.dp),
+                                painter = painterResource(id = item.icon),
+                                contentDescription = "icon"
+                            )
+                        },
+                        label = {
+                                Text(item.label)
+                        }
+                    )
+                }
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                isSearchState = true;
-            }) {
-                Icon(imageVector = Icons.Default.Search, contentDescription = "Search")
+            if(selectedIndex == 0)
+            {
+                FloatingActionButton(
+                    onClick = {
+
+                    },
+                    shape = RoundedCornerShape(50)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "search"
+                    )
+                }
             }
-        }
-    ) {innerpadding ->
-        Column(
-            modifier = Modifier
-                .padding(innerpadding)
-                .fillMaxSize()
-        ) {
-            Text(text = status.value?.data?.articles?.get(0)?.title.toString())
-        }
+        },
+    ) {
+        ContentScreen(
+            modifier = Modifier.padding(it),
+            selectedIndex = selectedIndex,
+            navController = navController,
+            everythingViewModel,
+            specificViewModel
+        )
+        
     }
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun ContentScreen(modifier : Modifier = Modifier,selectedIndex:Int,navController: NavHostController,everythingViewModel: EverythingViewModel,specificViewModel: SpecificViewModel)
+{
+    when(selectedIndex)
+    {
+        0 -> MainScreen(modifier,navController = navController,everythingViewModel,specificViewModel)
+        1 -> FavoriteScreen(navController = navController)
+        2 -> ProfileScreen(navController = navController)
+    }
+}
+
+
+
 
