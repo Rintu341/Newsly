@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +28,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -42,7 +40,6 @@ import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
@@ -64,9 +61,11 @@ import com.example.newsapp.data.model.CardContent
 import com.example.newsapp.data.model.Specific
 import com.example.newsapp.presentation.Everything.EverythingViewModel
 import com.example.newsapp.presentation.Specific.SpecificViewModel
+import com.example.newsapp.ui.navigation.AppScreen
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -115,7 +114,7 @@ fun MainScreen(modifier: Modifier = Modifier,navController: NavHostController,ev
             )
         }
         Spacer(modifier = Modifier.height(12.dp))
-        SwappableCards(everythingViewModel = everythingViewModel)
+        SwappableCards(everythingViewModel = everythingViewModel,navController)
         Spacer(modifier = Modifier.height(8.dp))
         LazyRow {
             items(newsButtons.size){index ->
@@ -145,8 +144,11 @@ fun MainScreen(modifier: Modifier = Modifier,navController: NavHostController,ev
                             title = statusSpecific?.data?.articles?.get(it)?.title,
                             description = statusSpecific?.data?.articles?.get(it)?.description,
                             publishedAt = statusSpecific?.data?.articles?.get(it)?.publishedAt,
+                            content = statusSpecific?.data?.articles?.get(it)?.content,
                             urlImage = statusSpecific?.data?.articles?.get(it)?.urlToImage,
-                        )
+                            url = statusSpecific?.data?.articles?.get(it)?.url
+                        ),
+                        navController
                     )
             }
         }
@@ -180,17 +182,11 @@ private fun NewsButton(label : String = Specific.Space.name,index: Int = 0, sele
 }
 
 @RequiresApi(Build.VERSION_CODES.O)
-@Preview(showSystemUi = true, showBackground = true, device = Devices.PHONE)
+//@Preview(showSystemUi = true, showBackground = true, device = Devices.PHONE)
 @Composable
 private fun SpecificNewsSection(
-    cardContent: CardContent =
-        CardContent(
-            author = "Mint",
-            title = "Crypto investors should be prepared to lose all their money, BOE governor says",
-            description = "“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”",
-            publishedAt = "2024-11-21T14:00:22Z"
-        ), // Default Content
-    onCardClick: () -> Unit = {}
+    cardContent: CardContent ,
+        navController: NavHostController
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
@@ -200,7 +196,8 @@ private fun SpecificNewsSection(
             .fillMaxWidth()
             .padding(bottom = 4.dp)
             .clickable {
-                onCardClick.invoke()
+                val cardContentJsonString = Gson().toJson(cardContent)
+                navController.navigate(AppScreen.DetailsScreen.name +"?cardContent=$cardContentJsonString")
             }
             .height(128.dp)
     ) {
@@ -209,7 +206,7 @@ private fun SpecificNewsSection(
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            LoadImage(cardContent)
+            LoadImage(cardContent = cardContent)
             Box(modifier = Modifier
                 .fillMaxSize()
                 .padding(8.dp),
@@ -258,7 +255,7 @@ private fun SpecificNewsSection(
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Unit = {})
+fun SwappableCards(everythingViewModel: EverythingViewModel, navController: NavHostController)
 {
     val pagerState = rememberPagerState()
     val statusEverything by everythingViewModel.news.observeAsState()
@@ -269,6 +266,8 @@ fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Un
             description = statusEverything?.data?.articles?.get(0)?.description,
             publishedAt = statusEverything?.data?.articles?.get(0)?.publishedAt,
             urlImage = statusEverything?.data?.articles?.get(0)?.urlToImage,
+            url = statusEverything?.data?.articles?.get(0)?.url,
+            content = statusEverything?.data?.articles?.get(0)?.content
         ),
         CardContent(
             author = statusEverything?.data?.articles?.get(1)?.author,
@@ -276,6 +275,8 @@ fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Un
             description = statusEverything?.data?.articles?.get(1)?.description,
             publishedAt = statusEverything?.data?.articles?.get(1)?.publishedAt,
             urlImage = statusEverything?.data?.articles?.get(1)?.urlToImage,
+            url = statusEverything?.data?.articles?.get(1)?.url,
+            content = statusEverything?.data?.articles?.get(1)?.content
         ),
         CardContent(
             author = statusEverything?.data?.articles?.get(2)?.author,
@@ -283,6 +284,9 @@ fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Un
             description = statusEverything?.data?.articles?.get(2)?.description,
             publishedAt = statusEverything?.data?.articles?.get(2)?.publishedAt,
             urlImage = statusEverything?.data?.articles?.get(2)?.urlToImage,
+            url = statusEverything?.data?.articles?.get(2)?.url,
+            content = statusEverything?.data?.articles?.get(2)?.content
+
         ),
         CardContent(
             author = statusEverything?.data?.articles?.get(3)?.author,
@@ -290,6 +294,8 @@ fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Un
             description = statusEverything?.data?.articles?.get(3)?.description,
             publishedAt = statusEverything?.data?.articles?.get(3)?.publishedAt,
             urlImage = statusEverything?.data?.articles?.get(3)?.urlToImage,
+            url = statusEverything?.data?.articles?.get(3)?.url,
+            content = statusEverything?.data?.articles?.get(3)?.content
         ),
         CardContent(
             author = statusEverything?.data?.articles?.get(4)?.author,
@@ -297,6 +303,8 @@ fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Un
             description = statusEverything?.data?.articles?.get(4)?.description,
             publishedAt = statusEverything?.data?.articles?.get(4)?.publishedAt,
             urlImage = statusEverything?.data?.articles?.get(4)?.urlToImage,
+            url = statusEverything?.data?.articles?.get(4)?.url,
+            content = statusEverything?.data?.articles?.get(4)?.content
         )
     )
 
@@ -313,10 +321,7 @@ fun SwappableCards(everythingViewModel: EverythingViewModel, onCardClick:() ->Un
                 .fillMaxWidth()
                 .height(200.dp)
         ) { page ->
-            CardItem(cardItems[page])
-            {
-                onCardClick.invoke()
-            }
+            CardItem(cardItems[page],navController)
         }
 
         Spacer(modifier = Modifier.height(5.dp))
@@ -341,9 +346,8 @@ fun CardItem(cardContent: CardContent =
             title = "Crypto investors should be prepared to lose all their money, BOE governor says",
             description = "“I’m going to say this very bluntly again,” he added. “Buy them only if you’re prepared to lose all your money.”"
         ), // Default Content
-             onCardClick: () -> Unit = {}
+             navController: NavHostController
 ) {
-//    val imageUrl = "https://gizmodo.com/app/uploads/2024/11/MS-1121-Christopher-Nolan.jpg"
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary),
@@ -351,7 +355,8 @@ fun CardItem(cardContent: CardContent =
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onCardClick.invoke()
+                val cardContentSowJsonString = Gson().toJson(cardContent)
+               navController.navigate(AppScreen.DetailsScreen.name +"?cardContent=$cardContentSowJsonString")
             }
 //            .aspectRatio(1.5f) // Adjust card aspect ratio
     ) {
@@ -359,7 +364,7 @@ fun CardItem(cardContent: CardContent =
             modifier = Modifier.fillMaxSize()
         ) {
 
-            LoadImage(cardContent)
+            LoadImage(cardContent = cardContent)
             // Overlay Text
             Box(
                 modifier = Modifier
@@ -394,12 +399,12 @@ fun CardItem(cardContent: CardContent =
 }
 
 @Composable
-private fun LoadImage(cardContent: CardContent) {
+fun LoadImage(modifier: Modifier = Modifier,cardContent: CardContent) {
     SubcomposeAsyncImage(
         model = cardContent.urlImage,
         contentDescription = "Card Background",
         contentScale = ContentScale.Crop,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(
                 brush = Brush.linearGradient(

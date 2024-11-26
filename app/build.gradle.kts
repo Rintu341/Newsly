@@ -4,6 +4,7 @@ plugins {
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.google.gms.google.services)
+//    id("kotlin-parcelize")
 }
 
 android {
@@ -111,6 +112,8 @@ dependencies {
     //coil
     implementation ("io.coil-kt:coil-compose:2.4.0") // For Coil image loading
     implementation("com.google.accompanist:accompanist-placeholder-material:0.32.0") // For shimmer effect
+
+//    implementation ("kotlinx.android:parcelize:1.2.1")
 
 
 }

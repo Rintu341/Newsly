@@ -3,15 +3,12 @@ package com.example.newsapp.ui.screen
 import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -24,13 +21,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -38,7 +32,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.newsapp.R
 import com.example.newsapp.data.model.Specific
 import com.example.newsapp.presentation.Authentication.AuthViewModel
@@ -64,33 +57,16 @@ fun HomeScreen(
     specificViewModel: SpecificViewModel,
     navController: NavHostController
 ) {
-
-//    var isSearchState by remember{
-//        mutableStateOf(false)
-//    }
-//    val statusEverything by everythingViewModel.news.observeAsState()
-//    val statusSpecific by specificViewModel.news.observeAsState()
-
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val currentUser = FirebaseAuth.getInstance().currentUser
     var displayName = currentUser?.displayName
-//    var searchValue by remember {
-//        mutableStateOf("")
-//    }
+
     var selectDate by remember {
         mutableStateOf("")
     }
     val isFocused by remember {
         mutableStateOf(false)
     }
-//    val focusManager = LocalFocusManager.current
-//    val searchWidth = animateFloatAsState(
-//        targetValue = if(isFocused) 1f else 0.9f,
-//        label = "",
-//        animationSpec = tween(durationMillis = 200)
-//    )
-//    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route ?: ""
-
     //CALENDAR
     val calendarState = rememberSheetState()
 
@@ -195,7 +171,8 @@ fun HomeScreen(
             selectedIndex = selectedIndex,
             navController = navController,
             everythingViewModel,
-            specificViewModel
+            specificViewModel,
+            authViewModel
         )
         
     }
@@ -203,13 +180,13 @@ fun HomeScreen(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ContentScreen(modifier : Modifier = Modifier,selectedIndex:Int,navController: NavHostController,everythingViewModel: EverythingViewModel,specificViewModel: SpecificViewModel)
+fun ContentScreen(modifier : Modifier = Modifier,selectedIndex:Int,navController: NavHostController,everythingViewModel: EverythingViewModel,specificViewModel: SpecificViewModel,authViewModel: AuthViewModel)
 {
     when(selectedIndex)
     {
         0 -> MainScreen(modifier,navController = navController,everythingViewModel,specificViewModel)
         1 -> FavoriteScreen(navController = navController)
-        2 -> ProfileScreen(navController = navController)
+        2 -> ProfileScreen(navController = navController,authViewModel)
     }
 }
 

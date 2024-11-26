@@ -1,24 +1,27 @@
 package com.example.newsapp.ui.navigation
 
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.newsapp.data.model.CardContent
 import com.example.newsapp.presentation.Authentication.AuthViewModel
 import com.example.newsapp.presentation.Everything.EverythingViewModel
 import com.example.newsapp.presentation.Specific.SpecificViewModel
 import com.example.newsapp.ui.screen.AppSplashScreen
-import com.example.newsapp.ui.screen.FavoriteScreen
+import com.example.newsapp.ui.screen.DetailsScreen
 import com.example.newsapp.ui.screen.HomeScreen
 import com.example.newsapp.ui.screen.LoginScreen
 import com.example.newsapp.ui.screen.OpeningScreen
-import com.example.newsapp.ui.screen.ProfileScreen
 import com.example.newsapp.ui.screen.SignupScreen
+import com.google.gson.Gson
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -56,6 +59,52 @@ fun AppNavigation()
             composable(route = AppScreen.SignupScreen.name){
                 SignupScreen(navController = navController,authViewModel = authViewModel)
             }
+            composable(
+                route = AppScreen.DetailsScreen.name + "?cardContent={cardContent}",
+                arguments = listOf(
+                    navArgument("cardContent") {
+                        type = NavType.StringType
+                        defaultValue = "" // Ensure this matches the fallback handling
+                    }
+                )
+            ) { navBackStackEntry ->
+                val cardContentJsonString = navBackStackEntry.arguments?.getString("cardContent")
+                val cardContent = if (!cardContentJsonString.isNullOrBlank()) {
+                    try {
+                        Gson().fromJson(cardContentJsonString, CardContent::class.java)
+                    } catch (e: Exception) {
+                        null // Handle deserialization errors
+                    }
+                } else {
+                    null // Handle null or blank case
+                }
+
+                if (cardContent != null) {
+                    DetailsScreen(navController = navController, cardContent = cardContent)
+                } else {
+                    // Handle the fallback case (e.g., show an error or navigate back)
+                    Toast.makeText(LocalContext.current,"Error",Toast.LENGTH_LONG).show()
+                }
+            }
+
+//            composable(
+//                route = AppScreen.DetailsScreen.name+"?cardContent={cardContent}",
+//                arguments = listOf(
+//                    navArgument(
+//                        name = "cardContent"
+//                    ) {
+//                        type = NavType.StringType
+//                        defaultValue = ""
+//                    },
+//                )
+//            ) {
+//
+//                val cardContentJsonString =  it.arguments?.getString("cardContent")
+//                val cardContent = Gson().fromJson(cardContentJsonString, CardContent::class.java)
+//                if(cardContent != null) {
+//                    DetailsScreen(navController = navController, cardContent = cardContent)
+//                }
+//            }
 
         }
 }

@@ -12,4 +12,5 @@
     <color name="splashScreenColor">#63B5AF</color>
     <color name="backButtonBack">#D8DADC</color>
     <color name="Primary">#FF3A44</color>
+    <color name="blur">#F5F5F5</color>
 </resources>

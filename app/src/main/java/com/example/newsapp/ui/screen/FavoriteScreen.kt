@@ -27,6 +27,6 @@ fun FavoriteScreen(modifier: Modifier = Modifier, navController: NavHostControll
        verticalArrangement = Arrangement.Center,
        horizontalAlignment = Alignment.CenterHorizontally
    ) {
-       Text("Favorite Screen")
+
    }
 }
