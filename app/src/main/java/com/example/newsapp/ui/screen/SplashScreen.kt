@@ -12,6 +12,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -40,14 +42,15 @@ fun AppSplashScreen(
     Surface(
         modifier = Modifier
             .fillMaxSize(),
-        color = colorResource(id = R.color.splashScreenColor)
+            color = colorResource(id = R.color.splashBackGround)
     ) {
         Box(
             contentAlignment = Alignment.Center
         ){
+
             Image(
-                modifier =  Modifier.size(width = 75.dp, height = 75.dp),
-                painter = painterResource(id = R.drawable.news),
+                modifier =  Modifier.size(200.dp),
+                painter = painterResource(id = R.drawable.boyicon),
                 contentDescription = "logo"
             )
         }

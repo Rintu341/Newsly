@@ -28,6 +28,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -69,6 +70,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -136,20 +138,22 @@ fun MainScreen(modifier: Modifier = Modifier,navController: NavHostController,ev
         LazyColumn(
 //            modifier = Modifier.shimmerEffect()
         ){
-            items(10)
-            {it ->
+            statusSpecific?.data?.articles?.size?.let {
+                items(it)
+                {it1 ->
                     SpecificNewsSection(
                         CardContent(
-                            author = statusSpecific?.data?.articles?.get(it)?.author,
-                            title = statusSpecific?.data?.articles?.get(it)?.title,
-                            description = statusSpecific?.data?.articles?.get(it)?.description,
-                            publishedAt = statusSpecific?.data?.articles?.get(it)?.publishedAt,
-                            content = statusSpecific?.data?.articles?.get(it)?.content,
-                            urlImage = statusSpecific?.data?.articles?.get(it)?.urlToImage,
-                            url = statusSpecific?.data?.articles?.get(it)?.url
+                            author = statusSpecific?.data?.articles?.get(it1)?.author,
+                            title = statusSpecific?.data?.articles?.get(it1)?.title,
+                            description = statusSpecific?.data?.articles?.get(it1)?.description,
+                            publishedAt = statusSpecific?.data?.articles?.get(it1)?.publishedAt,
+                            content = statusSpecific?.data?.articles?.get(it1)?.content,
+                            urlImage = statusSpecific?.data?.articles?.get(it1)?.urlToImage,
+                            url = statusSpecific?.data?.articles?.get(it1)?.url
                         ),
                         navController
                     )
+                }
             }
         }
 
@@ -350,7 +354,7 @@ fun CardItem(cardContent: CardContent =
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary),
+//        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.onSecondary),
         elevation = CardDefaults.elevatedCardElevation(10.dp),
         modifier = Modifier
             .fillMaxWidth()
@@ -400,6 +404,7 @@ fun CardItem(cardContent: CardContent =
 
 @Composable
 fun LoadImage(modifier: Modifier = Modifier,cardContent: CardContent) {
+
     SubcomposeAsyncImage(
         model = cardContent.urlImage,
         contentDescription = "Card Background",
