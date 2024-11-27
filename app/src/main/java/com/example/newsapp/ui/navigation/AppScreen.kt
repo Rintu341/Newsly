@@ -6,5 +6,6 @@ enum class AppScreen {
     LoginScreen,
     SignupScreen,
     OpeningScreen,
-    DetailsScreen
+    DetailsScreen,
+    SearchScreen
 }

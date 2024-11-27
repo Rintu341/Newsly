@@ -20,6 +20,7 @@ import com.example.newsapp.ui.screen.DetailsScreen
 import com.example.newsapp.ui.screen.HomeScreen
 import com.example.newsapp.ui.screen.LoginScreen
 import com.example.newsapp.ui.screen.OpeningScreen
+import com.example.newsapp.ui.screen.SearchScreen
 import com.example.newsapp.ui.screen.SignupScreen
 import com.google.gson.Gson
 
@@ -59,6 +60,9 @@ fun AppNavigation()
             composable(route = AppScreen.SignupScreen.name){
                 SignupScreen(navController = navController,authViewModel = authViewModel)
             }
+            composable(route = AppScreen.SearchScreen.name){
+                SearchScreen(navController = navController, searchViewModel = specificViewModel)
+            }
             composable(
                 route = AppScreen.DetailsScreen.name + "?cardContent={cardContent}",
                 arguments = listOf(
@@ -73,20 +77,21 @@ fun AppNavigation()
                     try {
                         Gson().fromJson(cardContentJsonString, CardContent::class.java)
                     } catch (e: Exception) {
-                        null // Handle deserialization errors
+                        null // error handle
                     }
                 } else {
-                    null // Handle null or blank case
+                    null //For null case
                 }
 
                 if (cardContent != null) {
                     DetailsScreen(navController = navController, cardContent = cardContent)
                 } else {
-                    // Handle the fallback case (e.g., show an error or navigate back)
                     Toast.makeText(LocalContext.current,"Error",Toast.LENGTH_LONG).show()
                 }
             }
 
+
+            // navigation data access problem
 //            composable(
 //                route = AppScreen.DetailsScreen.name+"?cardContent={cardContent}",
 //                arguments = listOf(
@@ -105,6 +110,5 @@ fun AppNavigation()
 //                    DetailsScreen(navController = navController, cardContent = cardContent)
 //                }
 //            }
-
         }
 }

@@ -37,6 +37,7 @@ import com.example.newsapp.data.model.Specific
 import com.example.newsapp.presentation.Authentication.AuthViewModel
 import com.example.newsapp.presentation.Everything.EverythingViewModel
 import com.example.newsapp.presentation.Specific.SpecificViewModel
+import com.example.newsapp.ui.navigation.AppScreen
 import com.google.firebase.auth.FirebaseAuth
 import com.maxkeppeker.sheets.core.models.base.rememberSheetState
 import com.maxkeppeler.sheets.calendar.CalendarDialog
@@ -154,7 +155,7 @@ fun HomeScreen(
             {
                 FloatingActionButton(
                     onClick = {
-
+                        navController.navigate(AppScreen.SearchScreen.name)
                     },
                     shape = RoundedCornerShape(50)
                 ) {

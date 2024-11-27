@@ -38,7 +38,7 @@ fun AppSplashScreen(
 ) {
     val authStatus = authViewModel.authStatus.observeAsState()
     val context = LocalContext.current
-    val currentUser = FirebaseAuth.getInstance().currentUser
+//    val currentUser = FirebaseAuth.getInstance().currentUser
     Surface(
         modifier = Modifier
             .fillMaxSize(),
@@ -55,7 +55,7 @@ fun AppSplashScreen(
             )
         }
     }
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(authStatus.value) {
         delay(3000)
             when (authStatus.value) {
                 is AuthStatus.Authenticated -> {

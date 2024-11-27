@@ -28,7 +28,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -48,8 +47,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Devices
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -70,7 +67,6 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -79,14 +75,14 @@ import java.util.Locale
 @Composable
 fun MainScreen(modifier: Modifier = Modifier,navController: NavHostController,everythingViewModel: EverythingViewModel,specificViewModel: SpecificViewModel) {
 
-    val newsButtons = mapOf<Int,String>(
+    val newsButtons = mapOf(
         0 to Specific.Arts.name,
         1 to Specific.Tech.name,
         2 to Specific.Finance.name,
         3 to Specific.Space.name,
         4 to Specific.Sport.name
     )
-    val statusEverything by everythingViewModel.news.observeAsState()
+//    val statusEverything by everythingViewModel.news.observeAsState()
     val statusSpecific by specificViewModel.news.observeAsState()
     var selectedIndex by remember {
         mutableStateOf(0)
@@ -188,13 +184,13 @@ private fun NewsButton(label : String = Specific.Space.name,index: Int = 0, sele
 @RequiresApi(Build.VERSION_CODES.O)
 //@Preview(showSystemUi = true, showBackground = true, device = Devices.PHONE)
 @Composable
-private fun SpecificNewsSection(
+fun SpecificNewsSection(
     cardContent: CardContent ,
-        navController: NavHostController
+    navController: NavHostController
 ) {
     Card(
         shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.primary),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.elevatedCardElevation(10.dp),
         modifier = Modifier
             .fillMaxWidth()
