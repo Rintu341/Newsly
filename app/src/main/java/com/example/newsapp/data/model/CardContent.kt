@@ -2,6 +2,7 @@ package com.example.newsapp.data.model
 
 //@Parcelize
 data class CardContent(
+    var articleId:String? = "",
     val author: String? = "",
     val title: String? = "",
     val description: String? = "",

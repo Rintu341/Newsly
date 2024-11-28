@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.newsapp.R
 import com.example.newsapp.data.model.CardContent
+import com.example.newsapp.presentation.Authentication.AuthViewModel
 import com.example.newsapp.ui.navigation.AppScreen
 import com.google.gson.Gson
 
@@ -60,10 +62,9 @@ import com.google.gson.Gson
 @Composable
 fun DetailsScreen(
     cardContent: CardContent,
-    navController: NavController
+    navController: NavController,
+    authViewModel: AuthViewModel
 ) {
-//    val cardContentJson = navController.currentBackStackEntry?.arguments?.getString("cardContent")
-//    val cardContent1 = Gson().fromJson(cardContentJson, CardContent::class.java)
     val configuration = LocalConfiguration.current
     val screenHeightDp = configuration.screenHeightDp
     val halfScreenHeightDp = screenHeightDp / 2
@@ -134,7 +135,7 @@ fun DetailsScreen(
                         ) {
                             IconButton(
                                 onClick = {
-                                    Toast.makeText(context,"Favorite click",Toast.LENGTH_SHORT).show()
+                                    authViewModel.saveArticle(cardContent,context)
                                 },
                                 modifier = Modifier
                                     .size(56.dp)
@@ -174,7 +175,7 @@ fun DetailsScreen(
                     navController.navigate(AppScreen.HomeScreen.name + "/{username}")
                 }) {
                     Icon(
-                        imageVector = Icons.Filled.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "back" )
                 }
 
@@ -221,7 +222,7 @@ fun cleanString(input: String): String {
     val normalized = noHtml.replace("\\r\\n", " ")
 
     // Remove any excessive placeholders like "[+10694 chars]"
-    val cleaned = normalized.replace(Regex("\\[\\+\\d+ chars\\]"), "")
+    val cleaned = normalized.replace(Regex("\\[\\+\\d+ chars]"), "")
 
     // Trim any extra spaces
     return cleaned.trim()

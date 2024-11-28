@@ -84,7 +84,7 @@ fun AppNavigation()
                 }
 
                 if (cardContent != null) {
-                    DetailsScreen(navController = navController, cardContent = cardContent)
+                    DetailsScreen(navController = navController, cardContent = cardContent, authViewModel = authViewModel)
                 } else {
                     Toast.makeText(LocalContext.current,"Error",Toast.LENGTH_LONG).show()
                 }

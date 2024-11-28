@@ -186,7 +186,7 @@ fun ContentScreen(modifier : Modifier = Modifier,selectedIndex:Int,navController
     when(selectedIndex)
     {
         0 -> MainScreen(modifier,navController = navController,everythingViewModel,specificViewModel)
-        1 -> FavoriteScreen(navController = navController)
+        1 -> FavoriteScreen(navController = navController, authViewModel = authViewModel, modifier = modifier)
         2 -> ProfileScreen(navController = navController,authViewModel)
     }
 }
