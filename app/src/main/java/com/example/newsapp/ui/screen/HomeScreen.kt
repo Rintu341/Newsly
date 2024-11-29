@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
@@ -61,12 +62,10 @@ fun HomeScreen(
     val userId = FirebaseAuth.getInstance().currentUser?.uid
     val currentUser = FirebaseAuth.getInstance().currentUser
     var displayName = currentUser?.displayName
+    val context = LocalContext.current
 
     var selectDate by remember {
         mutableStateOf("")
-    }
-    val isFocused by remember {
-        mutableStateOf(false)
     }
     //CALENDAR
     val calendarState = rememberSheetState()
@@ -105,6 +104,7 @@ fun HomeScreen(
 
 
     LaunchedEffect(key1 = true) {
+        authViewModel.fetchUserName(context = context)
         if (username != "username") {
             displayName = username
         }
@@ -187,7 +187,7 @@ fun ContentScreen(modifier : Modifier = Modifier,selectedIndex:Int,navController
     {
         0 -> MainScreen(modifier,navController = navController,everythingViewModel,specificViewModel)
         1 -> FavoriteScreen(navController = navController, authViewModel = authViewModel, modifier = modifier)
-        2 -> ProfileScreen(navController = navController,authViewModel)
+        2 -> ProfileScreen(navController = navController,authViewModel,modifier)
     }
 }
 

@@ -3,10 +3,10 @@ package com.example.newsapp.presentation.Authentication
 import android.content.Context
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.newsapp.R
 import com.example.newsapp.data.model.AuthStatus
 import com.example.newsapp.data.model.CardContent
 import com.google.firebase.auth.FirebaseAuth
@@ -22,9 +22,9 @@ class AuthViewModel : ViewModel() {
     val authStatus: LiveData<AuthStatus> = _authStatus
 
     private var databaseReference = FirebaseDatabase.getInstance().reference
-    private var currentUser = auth.currentUser
+    var currentUser = auth.currentUser
+    var username = currentUser?.displayName
 
-    val articles = MutableLiveData<List<CardContent>>()
     init {
         checkAuthStatus()
     }
@@ -32,7 +32,6 @@ class AuthViewModel : ViewModel() {
     {
         if(auth.currentUser != null) {
             _authStatus.value = AuthStatus.Authenticated
-
         }
         else
             _authStatus.value = AuthStatus.Unauthenticated
@@ -79,6 +78,7 @@ class AuthViewModel : ViewModel() {
     {
         auth.signOut()
         _authStatus.value = AuthStatus.Unauthenticated
+
     }
     fun checkAndSaveUser(userId: String, username: String) {
         val userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId)
@@ -87,7 +87,8 @@ class AuthViewModel : ViewModel() {
                 // If user does not exist, save the new user info
                 val userMap = mapOf(
                     "username" to username,
-                    "email" to FirebaseAuth.getInstance().currentUser?.email
+                    "email" to FirebaseAuth.getInstance().currentUser?.email,
+                    "imageUri" to R.drawable.profile
                 )
                 userRef.setValue(userMap)
                     .addOnCompleteListener { task ->
@@ -106,29 +107,9 @@ class AuthViewModel : ViewModel() {
 
         }
     }
-//    fun saveArticle(article:CardContent,context: Context)
-//    {
-//        val databaseReference = FirebaseDatabase.getInstance().reference
-//        val currentUser = auth.currentUser
-//
-//        currentUser?.let { user ->
-//            //Generate a unique key for the article
-//            val articleKey = databaseReference.child("Users").child(user.uid).child("articles").push().key
-//
-//            if(articleKey != null)
-//            {
-//                databaseReference.child("Users").child(user.uid).child("articles").child(articleKey).setValue(article)
-//                    .addOnCompleteListener { task ->
-//                        if(task.isSuccessful)
-//                            Toast.makeText(context,"article save successfully",Toast.LENGTH_LONG).show()
-//                        else
-//                            Toast.makeText(context,"article save failed",Toast.LENGTH_LONG).show()
-//                    }
-//            }
-//
-//        }
-//
-//    }
+
+
+
 
 fun saveArticle(article: CardContent, context: Context) {
 
@@ -218,6 +199,32 @@ fun fetchArticles(context: Context,onArticlesFetched: (List<CardContent>) -> Uni
                 }
         }
     }
+    fun fetchUserName(context: Context) {
+        val databaseReference = FirebaseDatabase.getInstance().reference
+        val currentUser = FirebaseAuth.getInstance().currentUser
+//        var username = ""
+        currentUser?.let { user ->
+            val userId = user.uid // Get the logged-in user's ID
+            val userRef = databaseReference.child("Users").child(userId).child("username") // Navigate to the "username" field
+
+            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        username = snapshot.getValue(String::class.java).toString() // Fetch the username as a String
+                    } else {
+
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Error: ${error.message}", Toast.LENGTH_LONG).show()
+                }
+            })
+        } ?: run {
+            Toast.makeText(context, "User Name not logged in", Toast.LENGTH_LONG).show()
+        }
+    }
+
 
 
 
